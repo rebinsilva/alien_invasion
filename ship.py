@@ -15,12 +15,16 @@ class Ship():
         self.rect.centerx = self.screen_rect.centerx
         self.rect.bottom = self.screen_rect.bottom
 
-        # Store a decimal value for the ship's center.
-        self.center = float(self.rect.centerx)
+        self.center_ship()
 
         # Movement flag
         self.moving_right = False
         self.moving_left = False
+
+    def center_ship(self):
+        """Center the ship on the screen."""
+        # Store a decimal value for the ship's center.
+        self.center = float(self.screen_rect.centerx)
 
     def blitme(self):
         """Draw the ship at its current location."""
