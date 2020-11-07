@@ -52,7 +52,7 @@ def update_screen(ai_settings, screen, ship, aliens, bullets):
     # Make the recently drawn screen visible.
     pygame.display.flip()
 
-def update_bullets(aliens, bullets):
+def update_bullets(ai_settings, screen, ship, aliens, bullets):
     """Update position of bullets and get rid of old bullets."""
     bullets.update()
     # Get rid of bullets that have disappeared
@@ -119,7 +119,7 @@ def change_fleet_direction(ai_settings, aliens):
 
 def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
     """Respond to ship being hit by alien"""
-    if stats.ship_left > 0:
+    if stats.ships_left > 0:
         # Decrement ships left.
         stats.ships_left -= 1
 
@@ -129,7 +129,7 @@ def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
 
         # Create a new fleet and center the ship.
         create_fleet(ai_settings, screen, ship, aliens)
-        ship.center_ship90
+        ship.center_ship()
 
         # pause.
         sleep(0.5)
