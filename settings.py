@@ -4,7 +4,7 @@ class Settings():
     def __init__(self):
         self.screen_width = 1200
         self.screen_height = 800
-        self.bg_color = (230, 230, 230)
+        self.bg_color = (230, 255, 230)
 
         # Ship settings
         self.ship_limit = 3
@@ -23,6 +23,9 @@ class Settings():
 
         # How quickly the alien point values increase
         self.score_scale = 1.5
+
+        # Stars settings
+        self.number_stars = 10
 
         self.initialize_dynamic_settings()
 

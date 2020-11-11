@@ -4,13 +4,16 @@ from time import sleep
 
 from bullet import Bullet
 from alien import Alien
+from star import Star
 
 def check_events(ai_settings, screen, stats, sb, play_button, ship, aliens, bullets):
     """Respond to keypresses and mouse events."""
      # Watch for keyboard and mouse events.
     for event in pygame.event.get():
-        # pygame.QUIT refers to pressing x
-        if event.type in (pygame.QUIT, pygame.K_q):
+        # pygame.QUIT refers to pressing x in the top panel and key q not working
+        if event.type == pygame.QUIT or event.type == pygame.K_q:
+            with open('score.txt', 'w') as f:
+                f.write(str(stats.high_score))
             sys.exit()
         elif event.type == pygame.KEYDOWN:
             check_keydown_events(event, ai_settings, screen, ship, bullets)
@@ -52,6 +55,10 @@ def check_keydown_events(event, ai_settings, screen, ship, bullets):
         ship.moving_right = True
     elif event.key == pygame.K_LEFT:
         ship.moving_left = True
+    elif event.key == pygame.K_UP:
+        ship.moving_top = True
+    elif event.key == pygame.K_DOWN:
+        ship.moving_bottom = True
     elif event.key == pygame.K_SPACE:
         fire_bullet(ai_settings, screen, ship, bullets)
 
@@ -68,10 +75,17 @@ def check_keyup_events(event, ship):
         ship.moving_right = False
     elif event.key == pygame.K_LEFT:
         ship.moving_left = False
+    elif event.key == pygame.K_UP:
+        ship.moving_top = False
+    elif event.key == pygame.K_DOWN:
+        ship.moving_bottom = False
 
-def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button):
+def update_screen(ai_settings, screen, stars, stats, sb, ship, aliens, bullets, play_button):
     # Set the background color.
     screen.fill(ai_settings.bg_color)
+
+    # Redraw the stars.
+    stars.draw(screen)
 
     # Redraw all bullets behind ship and aliens.
     for bullet in bullets.sprites():
@@ -90,7 +104,7 @@ def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_bu
     # Make the recently drawn screen visible.
     pygame.display.flip()
 
-def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
+def update_bullets(ai_settings, screen, stars, stats, sb, ship, aliens, bullets):
     """Update position of bullets and get rid of old bullets."""
     bullets.update()
     # Get rid of bullets that have disappeared
@@ -98,9 +112,9 @@ def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
 
-    check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets)
+    check_bullet_alien_collisions(ai_settings, screen, stars, stats, sb, ship, aliens, bullets)
 
-def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets):
+def check_bullet_alien_collisions(ai_settings, screen, stars, stats, sb, ship, aliens, bullets):
     """Respond to bullet-alien collisions."""
     # Check for any bullets that have hit aliens.
     # If so, get rid of the bullet and the alien.
@@ -120,6 +134,9 @@ def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, 
         # Increase level.
         stats.level += 1
         sb.prep_level()
+
+        # Repositioon the stars
+        stars.update()
 
         create_fleet(ai_settings, screen, ship, aliens)
 
@@ -196,7 +213,7 @@ def check_aliens_bottom(ai_settings, screen, stats, sb, ship, aliens, bullets):
     for alien in aliens.sprites():
         if alien.rect.bottom >= screen_rect.bottom:
             # Treat this the same as if the ship got hit
-            ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
+            ship_hit(ai_settings, screen, stats, sb, ship, aliens, bullets)
             break
 
 def update_aliens(ai_settings, screen, stats, sb, ship, aliens, bullets):
@@ -219,3 +236,9 @@ def check_high_score(stats, sb):
     if stats.score > stats.high_score:
         stats.high_score = stats.score
         sb.prep_high_score()
+
+def create_stars(ai_settings, screen, stars):
+    for _ in range(ai_settings.number_stars):
+        star = Star(screen)
+        star.update()
+        stars.add(star)
