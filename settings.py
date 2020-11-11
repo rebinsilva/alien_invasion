@@ -25,7 +25,7 @@ class Settings():
         self.score_scale = 1.5
 
         # Stars settings
-        self.number_stars = 10
+        self.number_stars = 5
 
         self.initialize_dynamic_settings()
 
